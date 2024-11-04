@@ -85,7 +85,7 @@ Now we have 1 number of columns (h=1) where we will save 100 simulations for eac
 (100 is based on npaths=1e2 which was previously defined)
 
 ```{r}
-# making 100 simulations with the model for the same date
+# Running 100 simulations with the model for the same date
 
 last_end_date=max(df$target_end_date)
 
