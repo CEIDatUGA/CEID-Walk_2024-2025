@@ -69,6 +69,8 @@ and fit a naive model from the forecast package on these last 5 values.
 y <- tail(win[!is.na(win)], n = tailn)
 
 object <- forecast::naive(y, h = h)$model
+
+object
 ```
 
 Then ot creates a empity matrix for storing simulations.
