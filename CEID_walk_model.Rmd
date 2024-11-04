@@ -16,7 +16,7 @@ RNGkind("L'Ecuyer-CMRG")
 set.seed(1)
 ```
 
-Here I create a dataframe that we can use in the model. 
+Here I create a dataframe that we can use to test the model. 
 
 ```{r}
 # A given initialdate
