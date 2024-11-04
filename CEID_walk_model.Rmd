@@ -1,0 +1,146 @@
+---
+title: "CEID-Walk model simplified"
+output:
+  pdf_document: default
+date: "2024-11-04"
+---
+
+This document aims to simplify the CEID-Walk model for the 24/25 flusight competition.
+
+Loading packages and sources
+Configuring model
+
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+RNGkind("L'Ecuyer-CMRG")
+set.seed(1)
+```
+
+Here I create a dataframe that we can use in the model. 
+
+```{r}
+# A given initialdate
+initial_date<-as.Date("2022-04-18")
+# 14 cases values
+values_ <- data.frame(value = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14))
+# 14 dates 
+dates_ <- data.frame(dates = seq(initial_date, initial_date + 13 *7, by = 7))
+# Dataframe with dates and cases
+df <- data.frame(values = values_$value, target_end_date = as.Date(dates_$dates))
+
+```
+
+They define some model configurations
+
+They start with the forecast horizon (h=1). 
+(We may try 4, but I'm not sure yet).
+
+```{r}
+# Initial model configurations
+
+fdt=initial_date + 14 *7 # forecasting date
+tailn=5 # size of the tail
+include_drift=TRUE # include drift in the model (which I don't think they are utilizing)
+npaths=1e2 # Number of simulations
+h=1 # forecast horizon, which they set as 1
+
+```
+
+The model basically initiates creating a window (win) of values. 
+It gets 14 values before the forecasting date and remove outliers from these values
+
+```{r}
+df1 <- df %>% filter(target_end_date <= fdt)
+  
+## remove oobservations more that 2 sds away from mean
+win <- ts(df1$value) %>% tail(n = max(tailn, 14))
+sigma <- sd(win)
+m <- mean(win)
+is_outlier <- abs(win - m) / (2 * sigma) > 1
+win[is_outlier] <- NA
+win
+```
+
+Then it gets the 5 last values (based on tail size previously defined)
+and fit a naive model from the forecast package on these last 5 values.
+
+
+```{r}
+y <- tail(win[!is.na(win)], n = tailn)
+
+object <- forecast::naive(y, h = h)$model
+sim <- matrix(NA, nrow = npaths, ncol = h)
+sim
+```
+
+Now we have 1 number of columns (h=1) where we will save 100 simulations for each forecast horizion (h)
+
+(100 is based on npaths=1e2 which was previously defined)
+
+```{r}
+# making 100 simulations with the model for the same date
+
+last_end_date=max(df$target_end_date)
+
+for (i in 1:npaths) {
+  sim[i, ] <- simulate(object, nsim = h, bootstrap = FALSE)
+}
+sim1 <- (sim + abs(sim)) / 2 #to zero out any negative values
+sim_dates <- seq(last_end_date + 7, last_end_date + h *7, by = 7)
+colnames(sim1) <- as.character(sim_dates)
+sim12 <- cbind(Rep = seq_len(nrow(sim1)), sim1) %>% as_tibble()
+simdf <- sim12 %>% pivot_longer(-Rep, names_to = "Date", 
+                                  values_to = "value")
+simdf %>% mutate(Date = lubridate::ymd(Date))
+
+simdf
+
+```
+
+We got 100 simulations for each forecast horizion (h=1)
+My understanding is that they use these 100 values to calculate 23 quantiles.
+Here are the functions they use, with small adaptations.
+
+```{r}
+
+# function to calculate the quantiles based on prob=p
+quant <- function(x, p){
+  quantile(x, prob = p, names = FALSE, type = 8, na.rm = TRUE)
+}
+
+# 23 quantiles
+prob <- c(0.01, 0.025, seq(0.05, 0.95, by = 0.05), 0.975, 0.99)
+
+
+# calculate the quantiles
+t1 <- tibble(
+   target = "forecast_target",
+   type  = "quantile",
+   quantile = prob,
+   value = quant(simdf$value, prob)
+)
+
+# calculate the point forecast
+t2 <-
+   tibble(
+     target = "forecast_target",
+    type = "point",
+     quantile = NA,
+     value = quant(simdf$value, 0.5)
+   )
+
+
+result<-bind_rows(t1, t2)
+
+result
+
+```
+
+We will need to format these results for each forecast horizon and each state.
+
+```{r}
+
+
+
+
+```
