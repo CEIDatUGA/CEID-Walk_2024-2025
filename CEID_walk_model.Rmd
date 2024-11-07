@@ -73,14 +73,14 @@ object <- forecast::naive(y, h = h)$model
 object
 ```
 
-Then ot creates a empity matrix for storing simulations.
+Then it creates an empity matrix for storing simulations.
 
 ```{r}
 sim <- matrix(NA, nrow = npaths, ncol = h)
 sim
 ```
 
-Now we have 1 number of columns (h=1) where we will save 100 simulations for each forecast horizion (h)
+Now we have 1 column (h=1) where we will save 100 simulations for each forecast horizion (h)
 
 (100 is based on npaths=1e2 which was previously defined)
 
