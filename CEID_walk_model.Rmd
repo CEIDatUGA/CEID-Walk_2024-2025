@@ -85,7 +85,7 @@ Now we have 1 column (h=1) where we will save 100 simulations for each forecast 
 (100 is based on npaths=1e2 which was previously defined)
 
 ```{r}
-# Running 100 simulations with the model for the same date
+# Running 100 simulations for the same date
 
 last_end_date=max(df$target_end_date)
 
