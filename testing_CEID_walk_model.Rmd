@@ -26,9 +26,10 @@ eval_string <- function(x){
 }
 mconfig$model_pars <- map(mconfig$model_pars, eval_string)
 
+# Use systme date as forecast date
 forecast_dates <- Sys.Date()
 
-
+# Or... Use fixed date as forecast date, stored as environment variable
 Sys.setenv("fdt" = "2022-04-18")
 forecast_dates <- Sys.getenv("fdt") %>% as.Date()
 #hopdir <- file.path("hopkins", forecast_dates)

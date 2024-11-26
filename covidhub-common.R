@@ -58,7 +58,9 @@ paths_to_forecast <- function(out, loc = "13", wks_ahead = 1:6, hop, fdt) {
   }
   
   out2 <- 
-    out %>% group_by(Rep) %>% arrange(Date) #%>% 
+    out %>% group_by(Rep) %>% arrange(Date) %>% 
+    # ERIC MARTY RESTORED CREATION OF day_diff
+    mutate(day_diff = c(NA, diff(Date))) # %>% 
     #mutate(cum_deaths = cumsum(deaths),
     #       day_diff = c(NA, diff(Date)))
   
