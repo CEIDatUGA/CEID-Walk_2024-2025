@@ -1,0 +1,158 @@
+name,full_name
+weekendingdate,Week Ending Date
+jurisdiction,Geographic aggregation
+numinptbeds,Number of Inpatient Beds
+numinptbedsadult,Number of Adult Inpatient Beds
+numinptbedsped,Number of Pediatric Inpatient beds
+numinptbedsocc,Number of Inpatient Beds Occupied
+numinptbedsoccadult,Number of Adult Inpatient Beds Occupied
+numinptbedsoccped,Number of Pediatric Inpatient Beds Occupied
+numicubeds,Number of ICU Beds
+numicubedsadult,Number of Adult ICU Beds
+numicubedsped,Number of Pediatric ICU Beds
+numicubedsocc,Number of ICU Beds Occupied
+numicubedsoccadult,Number of Adult ICU Beds Occupied
+numicubedsoccped,Number of Pediatric ICU Beds Occupied
+numconfc19hosppatsadult,Number of Adult Patients Hospitalized with COVID-19
+numconfc19hosppatsped,Number of Pediatric Patients Hospitalized with COVID-19
+totalconfc19hosppats,Total Patients Hospitalized with COVID-19
+numconffluhosppatsadult,Number of Adult Patients Hospitalized with Influenza
+numconffluhosppatsped,Number of Pedatric Patients Hospitalized with Influenza
+totalconffluhosppats,Total Patients Hospitalized with Influenza
+numconfrsvhosppatsadult,Number of Adult Patients Hospitalized with RSV
+numconfrsvhosppatsped,Number of Pediatric Patients Hospitalized with RSV
+totalconfrsvhosppats,Total Patients Hospitalized with RSV
+numconfc19icupatsadult,Number of Adult ICU Patients Hospitalized with COVID-19
+numconfc19icupatsped,Number of Pediatric ICU Patients Hospitalized with COVID-19
+totalconfc19icupats,Total ICU Patients Hospitalized with COVID-19
+numconffluicupatsadult,Number of Adult ICU Patients Hospitalized with Influenza
+numconffluicupatsped,Number of Pediatric ICU Patients Hospitalized with Influenza
+totalconffluicupats,Total ICU Patients Hospitalized with Influenza
+numconfrsvicupatsadult,Number of Adult ICU Patients Hospitalized with RSV
+numconfrsvicupatsped,Number of Pediatric ICU Patients Hospitalized with RSV
+totalconfrsvicupats,Total ICU Patients Hospitalized with RSV
+numconfc19newadmped0to4,"Number of Pediatric COVID-19 Admissions, 0-4 years"
+numconfc19newadmped5to17,"Number of Pediatric COVID-19 Admissions, 5-17 years"
+totalconfc19newadmped,Total Pediatric COVID-19 Admissions
+numconfc19newadmadult18to49,"Number of Adult COVID-19 Admissions, 18-49 years"
+numconfc19newadmadult50to64,"Number of Adult COVID-19 Admissions, 50-64 years"
+numconfc19newadmadult65to74,"Number of Adult COVID-19 Admissions, 65-74 years"
+numconfc19newadmadult75plus,"Number of Adult COVID-19 Admissions, 75 plus"
+totalconfc19newadmadult,Total Adult COVID-19 Admissions
+numconfc19newadmunk,"Number of COVID-19 Admissions, unknown age"
+totalconfc19newadm,Total COVID-19 Admissions
+numconfflunewadmped0to4,"Number of Pediatric Influenza Admissions, 0-4 years"
+numconfflunewadmped5to17,"Number of Pediatric Influenza Admissions, 5-17 years"
+totalconfflunewadmped,Total Pediatric Influenza Admissions
+numconfflunewadmadult18to49,"Number of Adult Influenza Admissions, 18-49 years"
+numconfflunewadmadult50to64,"Number of Adult Influenza Admissions, 50-64 years"
+numconfflunewadmadult65to74,"Number of Adult Influenza Admissions, 65-74 years"
+numconfflunewadmadult75plus,"Number of Adult Influenza Admissions, 75 plus years"
+totalconfflunewadmadult,Total Adult Influenza Admissions
+numconfflunewadmunk,"Number of Influenza Admissions, unknown age"
+totalconfflunewadm,Total Influenza Admissions
+numconfrsvnewadmped0to4,"Number of Pediatric RSV Admissions, 0-4 years"
+numconfrsvnewadmped5to17,"Number of Pediatric RSV Admissions, 5-17 years"
+totalconfrsvnewadmped,Total Pediatric RSV Admissions
+numconfrsvnewadmadult18to49,"Number of Adult RSV Admissions, 18-49 years"
+numconfrsvnewadmadult50to64,"Number of Adult RSV Admissions, 50-64 years"
+numconfrsvnewadmadult65to74,"Number of Adult RSV Admissions, 65-74 years"
+numconfrsvnewadmadult75plus,"Number of Adult RSV Admissions, 75 plus years"
+totalconfrsvnewadmadult,Total Adult RSV Admissions
+numconfrsvnewadmunk,"Number of RSV Admissions, unknown age"
+totalconfrsvnewadm,Total RSV Admissions
+pctinptbedsocc,Percent Inpatient Beds Occupied
+pctconfc19inptbeds,Percent Inpatient Beds Occupied by COVID-19 Patients
+pctconffluinptbeds,Percent Inpatient Beds Occupied by Influenza Patients
+pctconfrsvinptbeds,Percent Inpatient Beds Occupied by RSV Patients
+pcticubedsocc,Percent ICU Beds Occupied
+pctconfc19icubeds,Percent ICU Beds Occupied by COVID-19 Patients
+pctconffluicubeds,Percent ICU Beds Occupied by Influenza Patients
+pctconfrsvicubeds,Percent ICU Beds Occupied by RSV Patients
+pctconfc19newadmadult,Percent Adult COVID-19 Admissions
+pctconfc19newadmped,Percent Pediatric COVID-19 Admissions
+pctconfflunewadmadult,Percent Adult Influenza Admissions
+pctconfflunewadmped,Percent Pediatric Influenza Admissions
+pctconfrsvnewadmadult,Percent Adult RSV Admissions
+pctconfrsvnewadmped,Percent Pediatric RSV Admissions
+numinptbedshosprep,Number Hospitals Reporting Number of Inpatient Beds
+numinptbedsocchosprep,Number Hospitals Reporting Number of Inpatient Beds Occupied
+numicubedshosprep,Number Hospitals Reporting Number of ICU Beds
+numicubedsocchosprep,Number Hospitals Reporting Number of ICU Beds Occupied
+totalconfc19hosppatshosprep,Number Hospitals Reporting Total Patients Hospitalized with COVID-19
+totalconffluhosppatshosprep,Number Hospitals Reporting TotalPatients Hospitalized with Influenza
+totalconfrsvhosppatshosprep,Number Hospitals Reporting Total Patients Hospitalized with RSV
+totalconfc19icupatshosprep,Number Hospitals Reporting ICU Patients Hospitalized with COVID-19
+totalconffluicupatshosprep,Number Hospitals Reporting ICU Patients Hospitalized with Influenza
+totalconfrsvicupatshosprep,Number Hospitals Reporting ICU Patients Hospitalized with RSV
+totalconfc19newadmpedhosprep,Number Hospitals Reporting Pediatric COVID-19 Admissions
+totalconfc19newadmadulthosprep,Number Hospitals Reporting Adult COVID-19 Admissions
+totalconfc19newadmhosprep,Number Hospitals Reporting COVID-19 Admissions
+totalconfflunewadmpedhosprep,Number Hospitals Reporting Pediatric Influenza Admissions
+totalconfflunewadmadulthosprep,Number Hospitals Reporting Adult Influenza Admissions
+totalconfflunewadmhosprep,Number Hospitals Reporting Influenza Admissions
+totalconfrsvnewadmpedhosprep,Number Hospitals Reporting Pediatric RSV Admissions
+totalconfrsvnewadmadulthosprep,Number Hospitals Reporting Adult RSV Admissions
+totalconfrsvnewadmhosprep,Number Hospitals Reporting RSV Admissions
+pctinptbedsocchosprep,Number Hospitals Reporting Percent Inpatient Beds Occupied
+pcticubedsocchosprep,Number Hospitals Reporting Percent ICU Beds Occupied
+pctconfc19inptbedshosprep,Number Hospitals Reporting Percent Inpatient Beds Occupied by COVID-19 Patients
+pctconffluinptbedshosprep,Number Hospitals Reporting Percent Inpatient Beds Occupied by Influenza Patients
+pctconfrsvinptbedshosprep,Number Hospitals Reporting Percent Inpatient Beds Occupied by RSV Patients
+pctconfc19icubedshosprep,Number Hospitals Reporting Percent ICU Beds Occupied by COVID-19 Patients
+pctconffluicubedshosprep,Number Hospitals Reporting Percent ICU Beds Occupied by Influenza Patients
+pctconfrsvicubedshosprep,Number Hospitals Reporting Percent ICU Beds Occupied by RSV Patients
+numinptbedsperchosprep,Percent Hospitals Reporting Number of Inpatient Beds
+numinptbedsoccperchosprep,Percent Hospitals Reporting Number of Inpatient Beds Occupied
+numicubedsperchosprep,Percent Hospitals Reporting Number of ICU Beds
+numicubedsoccperchosprep,Percent Hospitals Reporting Number of ICU Beds Occupied
+totalconfc19hosppatsperc,Percent Hospitals Reporting Total Patients Hospitalized with COVID-19
+totalconffluhosppatsperc,Percent Hospitals Reporting TotalPatients Hospitalized with Influenza
+totalconfrsvhosppatsperc,Percent Hospitals Reporting Total Patients Hospitalized with RSV
+totalconfc19icupatsperchosprep,Percent Hospitals Reporting ICU Patients Hospitalized with COVID-19
+totalconffluicupatsperchosprep,Percent Hospitals Reporting ICU Patients Hospitalized with Influenza
+totalconfrsvicupatsperchosprep,Percent Hospitals Reporting ICU Patients Hospitalized with RSV
+totalconfc19newadmpedper,Percent Hospitals Reporting Pediatric COVID-19 Admissions
+totalconfc19newadmadultp,Percent Hospitals Reporting Adult COVID-19 Admissions
+totalconfc19newadmperchosprep,Percent Hospitals Reporting COVID-19 Admissions
+totalconfflunewadmpedper,Percent Hospitals Reporting Pediatric Influenza Admissions
+totalconfflunewadmadultp,Percent Hospitals Reporting Adult Influenza Admissions
+totalconfflunewadmperchosprep,Percent Hospitals Reporting Influenza Admissions
+totalconfrsvnewadmpedper,Percent Hospitals Reporting Pediatric RSV Admissions
+totalconfrsvnewadmadultp,Percent Hospitals Reporting Adult RSV Admissions
+totalconfrsvnewadmperchosprep,Percent Hospitals Reporting RSV Admissions
+pctinptbedsoccperchosprep,Percent Hospitals Reporting Percent Inpatient Beds Occupied
+pcticubedsoccperchosprep,Percent Hospitals Reporting Percent ICU Beds Occupied
+pctconfc19inptbedsperchosprep,Percent Hospitals Reporting Percent Inpatient Beds Occupied by COVID-19 Patients
+pctconffluinptbedsperchosprep,Percent Hospitals Reporting Percent Inpatient Beds Occupied by Influenza Patients
+pctconfrsvinptbedsperchosprep,Percent Hospitals Reporting Percent Inpatient Beds Occupied by RSV Patients
+pctconfc19icubedsperchosprep,Percent Hospitals Reporting Percent ICU Beds Occupied by COVID-19 Patients
+pctconffluicubedsperchosprep,Percent Hospitals Reporting Percent ICU Beds Occupied by Influenza Patients
+pctconfrsvicubedsperchosprep,Percent Hospitals Reporting Percent ICU Beds Occupied by RSV Patients
+numinptbedsperchosprepabschg,Absolute Change in the Percent Hospitals Reporting Number of Inpatient Beds from Prior Week
+numinptbedsoccperchospre,Absolute Change in the Absolute Change in the Percent Hospitals Reporting Number of Inpatient Beds Occupied from Prior Week
+numicubedsperchosprepabschg,Absolute Change in the Percent Hospitals Reporting Number of ICU Beds from Prior Week
+numicubedsoccperchosprepabschg,Absolute Change in the Percent Hospitals Reporting Number of ICU Beds Occupied from Prior Week
+totalconfc19hosppatsperc_1,Absolute Change in the Percent Hospitals Reporting Total Patients Hospitalized with COVID-19 from Prior Week
+totalconffluhosppatsperc_1,Absolute Change in the Percent Hospitals Reporting TotalPatients Hospitalized with Influenza from Prior Week
+totalconfrsvhosppatsperc_1,Absolute Change in the Percent Hospitals Reporting Total Patients Hospitalized with RSV from Prior Week
+totalconfc19icupatsperch,Absolute Change in the Percent Hospitals Reporting ICU Patients Hospitalized with COVID-19 from Prior Week
+totalconffluicupatsperch,Absolute Change in the Percent Hospitals Reporting ICU Patients Hospitalized with Influenza from Prior Week
+totalconfrsvicupatsperch,Absolute Change in the Percent Hospitals Reporting ICU Patients Hospitalized with RSV from Prior Week
+totalconfc19newadmpedper_1,Absolute Change in the Percent Hospitals Reporting Pediatric COVID-19 Admissions from Prior Week
+totalconfc19newadmadultp_1,Absolute Change in the Percent Hospitals Reporting Adult COVID-19 Admissions from Prior Week
+totalconfc19newadmpercho,Absolute Change in the Percent Hospitals Reporting COVID-19 Admissions from Prior Week
+totalconfflunewadmpedper_1,Absolute Change in the Percent Hospitals Reporting Pediatric Influenza Admissions from Prior Week
+totalconfflunewadmadultp_1,Absolute Change in the Percent Hospitals Reporting Adult Influenza Admissions from Prior Week
+totalconfflunewadmpercho,Absolute Change in the Percent Hospitals Reporting  Influenza Admissions from Prior Week
+totalconfrsvnewadmpedper_1,Absolute Change in the Percent Hospitals Reporting Pediatric RSV Admissions from Prior Week
+totalconfrsvnewadmadultp_1,Absolute Change in the Percent Hospitals Reporting Adult RSV Admissions from Prior Week
+totalconfrsvnewadmpercho,Absolute Change in the Percent Hospitals Reporting RSV Admissions from Prior Week
+pctinptbedsoccperchospre,Absolute Change in the Percent Hospitals Reporting Percent Inpatient Beds Occupied from Prior Week
+pcticubedsoccperchosprepabschg,Absolute Change in the Percent Hospitals Reporting Percent ICU Beds Occupied from Prior Week
+pctconfc19inptbedspercho,Absolute Change in the Percent Hospitals Reporting Percent Inpatient Beds Occupied by COVID-19 Patients from Prior Week
+pctconffluinptbedspercho,Absolute Change in the Percent Hospitals Reporting Percent Inpatient Beds Occupied by Influenza Patients from Prior Week
+pctconfrsvinptbedspercho,Absolute Change in the Percent Hospitals Reporting Percent Inpatient Beds Occupied by RSV Patients from Prior Week
+pctconfc19icubedsperchos,Absolute Change in the Percent Hospitals Reporting Percent ICU Beds Occupied by COVID-19 Patients from Prior Week
+pctconffluicubedsperchos,Absolute Change in the Percent Hospitals Reporting Percent ICU Beds Occupied by Influenza Patients from Prior Week
+pctconfrsvicubedsperchos,Absolute Change in the Percent Hospitals Reporting Percent ICU Beds Occupied by RSV Patients from Prior Week
