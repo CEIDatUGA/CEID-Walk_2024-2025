@@ -343,3 +343,65 @@ results_with_new_dataframe <- map(forecast_dates,
 results_with_new_dataframe
 
 ```
+Now lets forecast for all 53 locations (incl US, Puerto Rico and DC)
+
+```{r}
+
+# Setup the forecast date 
+forecast_dates <- max(test_dataframe$target_end_date) # forecast date is the last data of the dataset
+forecast_dates
+
+# Split the data by location 
+# create nested dataframes to run one at the time similar to the example above
+
+locations_data <- test_dataframe %>%
+  group_split(location)
+
+
+unique(test_dataframe$location)
+
+# Define a helper function to process each location
+process_location <- function(location_data) {
+  # Filter data for the given location
+  filtered_data <- location_data %>%
+    filter(target_end_date <= max(forecast_dates))
+  
+  # Run the simulation
+  results <- map(
+    forecast_dates,
+    sim_paths_2024_2025,
+    target_types = "admissions_influenza",
+    tdat = filtered_data,
+    npaths = mconfig$model_pars$npaths,
+    tailn = mconfig$model_pars$tailn,
+    include_drift = mconfig$model_pars$include_drift,
+    odir = "forecasts",
+    mname = "Walk"
+  )
+  
+  return(results)
+}
+
+# Apply the process to all locations
+all_results <- map(locations_data, process_location)
+
+#Combine all results into a single data frame
+combined_results <- all_results %>%
+  map_dfr(~bind_rows(.x))
+
+# Organize the output format
+colnames(combined_results)<-c("reference_date","target","target_end_date","location","output_type","output_type_id","value") 
+
+# Correct the forecast horizion (0-3) and remove point forecast (keep only quantiles)
+combined_results <- combined_results %>%
+  filter(output_type != "point") %>%
+  mutate(horizon = as.numeric(target_end_date - reference_date) / 7 - 1)%>%
+  mutate(reference_date = reference_date+7)
+# Final dataframe ready for submission
+head(combined_results)
+
+# write CSV
+write_csv(combined_results, file = "2024-11-23_CEID_Walk.csv")
+```
+
+
