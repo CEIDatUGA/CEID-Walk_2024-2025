@@ -229,15 +229,39 @@ NHSN_names <- read_csv("NHSN_names.csv", show_col_types = FALSE)
 # Get auto-refreshed data via OData protocol
 # https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data
 library(RSocrata)
-NHSN_data <- suppressWarnings(read.socrata("https://data.cdc.gov/api/odata/v4/ua7e-t2fy")) %>% 
-  as_tibble() %>% 
-  mutate(weekendingdate = as.Date(weekendingdate)) %>% 
+```
+
+NHSN data (Eric version not in use)
+
+```{r}
+
+#NHSN_data <- suppressWarnings(read.socrata("https://data.cdc.gov/api/odata/v4/ua7e-t2fy")) %>% 
+#  as_tibble() %>% 
+#  mutate(weekendingdate = as.Date(weekendingdate)) %>% 
   # Impose full names`
-  data.table::setnames(old = NHSN_names$name, new = NHSN_names$full_name) %>% 
+#  data.table::setnames(old = NHSN_names$name, new = NHSN_names$full_name) %>% 
+#  mutate(`Geographic aggregation` = case_when(`Geographic aggregation` == 'USA' ~ 'US',
+#                                              .default = #`Geographic aggregation`)) %>% 
+#  filter(`Geographic aggregation` %in% state_codes$abbreviation)
+  
+```
+
+Preliminary NHSN data from downloaded file.
+
+```{r}
+NHSN_data <- read_csv("weekly_forecasts/preliminary_data/Weekly_Hospital_Respiratory_Data__HRD__Metrics_by_Jurisdiction__National_Healthcare_Safety_Network__NHSN___Preliminary__20241204.csv") %>% 
+  as_tibble() %>% 
+#  mutate(`Week Ending Date` = as.Date(`Week Ending Date`)) %>% 
+  # Impose full names`
+#  data.table::setnames(old = NHSN_names$name, new = NHSN_names$full_name) %>% 
   mutate(`Geographic aggregation` = case_when(`Geographic aggregation` == 'USA' ~ 'US',
                                               .default = `Geographic aggregation`)) %>% 
   filter(`Geographic aggregation` %in% state_codes$abbreviation)
-  
+```
+
+Final dataset utilized on the forecasting.
+
+```{r}
 
 # selected_data <- NHSN_data %>%
 #   # select(`Week Ending Date`, `Geographic aggregation`, `Weekly Total Influenza Admissions`) %>% # old dataset
@@ -401,7 +425,7 @@ combined_results <- combined_results %>%
 head(combined_results)
 
 # write CSV
-write_csv(combined_results, file = "2024-11-23_CEID_Walk.csv")
+write_csv(combined_results, file = "weekly_forecasts/UGA_CEID-Walk/2024-12-07_CEID-Walk.csv")
 ```
 
 
