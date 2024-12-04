@@ -422,7 +422,11 @@ combined_results <- combined_results %>%
   mutate(horizon = as.numeric(target_end_date - reference_date) / 7 - 1)%>%
   mutate(reference_date = reference_date+7)
 # Final dataframe ready for submission
+
+combined_results$target<-"wk inc flu hosp"
+
 head(combined_results)
+
 
 # write CSV
 write_csv(combined_results, file = "weekly_forecasts/UGA_CEID-Walk/2024-12-07-UGA_CEID-Walk.csv")
