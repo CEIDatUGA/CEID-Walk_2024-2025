@@ -425,7 +425,7 @@ combined_results <- combined_results %>%
 head(combined_results)
 
 # write CSV
-write_csv(combined_results, file = "weekly_forecasts/UGA_CEID-Walk/2024-12-07_UGA_CEID-Walk.csv")
+write_csv(combined_results, file = "weekly_forecasts/UGA_CEID-Walk/2024-12-07-UGA_CEID-Walk.csv")
 ```
 
 
