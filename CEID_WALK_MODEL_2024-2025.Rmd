@@ -164,6 +164,7 @@ You need to download preliminary NHSN data from this website:
 
 https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data.
 
+Move file to the preliminary_data folder.
 
 It gets updated every Wednesday around 1PM.
 
