@@ -6,7 +6,7 @@ date: "2024-12-18"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tidyr)
+library(tidyverse)
 
 library(RSocrata)
 ```
@@ -162,11 +162,21 @@ NHSN_names <- read_csv("NHSN_names.csv", show_col_types = FALSE)
 You need to download preliminary NHSN data from this website:
 
 
-https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data.
+<https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data>
 
 Move file to the preliminary_data folder.
 
 It gets updated every Wednesday around 1PM.
+
+```{r}
+URL <- "https://data.cdc.gov/resource/mpgq-jmmr.csv?$limit=20000"
+preliminary_NHSN_data <- RSocrata::read.socrata(URL)
+last_updated <- gsub("-","",Sys.Date())
+write_csv(preliminary_NHSN_data, paste0(
+  "weekly_forecasts/preliminary_data/Weekly_Hospital_Respiratory_Data__HRD__Metrics_by_Jurisdiction__National_Healthcare_Safety_Network__NHSN___Preliminary__", last_updated, ".csv")
+  )
+```
+
 
 
 ```{r}
