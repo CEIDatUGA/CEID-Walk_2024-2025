@@ -169,7 +169,7 @@ Move file to the preliminary_data folder.
 It gets updated every Wednesday around 1PM.
 
 ```{r}
-URL <- "https://data.cdc.gov/resource/mpgq-jmmr.csv?$limit=20000"
+URL <- "https://data.cdc.gov/resource/mpgq-jmmr.csv?$limit=30000"
 preliminary_NHSN_data <- RSocrata::read.socrata(URL)
 last_updated <- gsub("-","",Sys.Date())
 write_csv(preliminary_NHSN_data, paste0(
