@@ -1,0 +1,435 @@
+---
+title: "Untitled"
+author: "Victor Felix"
+date: "2024-11-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+```
+
+Here is a example of running the CEID-walk model for COVID-19 cases and deaths data.
+
+We initialize the model with some variables and a dataset called tdat.
+
+```{r}
+
+suppressPackageStartupMessages(library(tidyverse))
+source("covidhub-common.R") # old functions
+source("FluSight.R") # new functions
+RNGkind("L'Ecuyer-CMRG")
+set.seed(1)
+
+mconfig <- ini::read.ini("model.ini")
+eval_string <- function(x){
+  str2lang(x) %>% eval()
+}
+mconfig$model_pars <- map(mconfig$model_pars, eval_string)
+
+# Use systme date as forecast date
+forecast_dates <- Sys.Date()
+
+# Or... Use fixed date as forecast date, stored as environment variable
+Sys.setenv("fdt" = "2022-04-18")
+forecast_dates <- Sys.getenv("fdt") %>% as.Date()
+#hopdir <- file.path("hopkins", forecast_dates)
+
+#tdat <- load_hopkins(hopdir) #%>% filter(str_detect(location, "^13"))
+
+tdat <- read_csv("hopkins/hopkins_2022_04_18.csv")
+
+head(tdat)
+```
+
+It is running but it generates some internal errors.  
+Update (2024-11-26): Code chunk below now runs without errors or warnings.
+
+```{r}
+rw_forecast <- function(df, fdt, npaths = 100, 
+                        h = 4, tailn = Inf, include_drift = FALSE){
+  stopifnot(npaths > 0)
+  last_end_date <- max(df$target_end_date)
+  stopifnot(fdt - last_end_date < lubridate::ddays(3))
+  df1 <- df %>% filter(target_end_date <= fdt)
+  ## remove oobservations more that 2 sds away from mean
+  win <- ts(df1$value) %>% tail(n = max(tailn, 14))
+  sigma <- sd(win)
+  m <- mean(win)
+  is_outlier <- abs(win - m) / (2 * sigma) > 1
+  win[is_outlier] <- NA
+  y <- tail(win[!is.na(win)], n = tailn)
+  stopifnot(length(y) == tailn)
+  object <- forecast::naive(y, h = 1)$model
+  sim <- matrix(NA, nrow = npaths, ncol = h)
+  for (i in 1:npaths) {
+    sim[i, ] <- simulate(object, nsim = h, bootstrap = FALSE)
+  }
+  sim1 <- (sim + abs(sim)) / 2 #to zero out any negative values
+  sim_dates <- seq(last_end_date + 7, last_end_date + h *7, by = 7)
+  colnames(sim1) <- as.character(sim_dates)
+  sim12 <- cbind(Rep = seq_len(nrow(sim1)), sim1) %>% as_tibble()
+  simdf <- sim12 %>% pivot_longer(-Rep, names_to = "Date", 
+                                  values_to = "value")
+  simdf %>% mutate(Date = lubridate::ymd(Date))
+}
+
+reshape_paths_like_pompout <- function(x){
+  x %>% mutate(target_type = recode(target_type, 
+                                    `wk ahead inc death`= "deaths",
+                                    `wk ahead inc case` = "cases")) %>% 
+    pivot_wider(id_cols = c(Rep, Date), names_from = "target_type", 
+                values_from = "value")
+}
+
+reshape_paths_2024_2025 <- function(x){
+  x %>% 
+    # mutate(target_type = recode(target_type, 
+    #                                 `wk ahead inc death`= "deaths",
+    #                                 `wk ahead inc case` = "cases")) %>% 
+    pivot_wider(id_cols = c(Rep, Date), names_from = "target_type", 
+                values_from = "value")
+}
+
+sim_paths <- function(fdt, tdat, mname, odir, ...) {
+  
+  tdat1 <- tdat %>% 
+    filter(target_type %in% c("wk ahead inc death", "wk ahead inc case")) %>%
+    group_by(location, target_type) %>%
+    arrange(target_end_date) %>%
+    nest() %>% 
+    mutate(paths = map(data, rw_forecast, fdt = fdt, ...)) %>%
+    select(-data) %>%
+    unnest(cols = paths) %>%
+    group_by(location) %>%
+    nest() %>%
+    mutate(paths2 = map(data, reshape_paths_like_pompout)) %>%
+    select(-data) %>%
+    mutate(fcst_df = map2(paths2, location, paths_to_forecast, hop = tdat, 
+                          fdt = fdt))
+  
+  full <- bind_rows(tdat1$fcst_df)
+  
+  fname <- paste0(fdt, "-CEID-", mname, ".csv")
+  if (!dir.exists(odir)) {
+    dir.create(odir)
+  }
+  opath <- file.path(odir, fname)
+  write_csv(full, opath)
+}
+
+sim_paths_2024_2025 <- function(fdt, tdat, target_types, mname, odir, ...) {
+  
+  print(target_types)
+  
+  tdat1 <- tdat %>% 
+    filter(target_type %in% target_types) %>%
+    group_by(location, target_type) %>%
+    arrange(target_end_date) %>%
+    nest() %>% 
+    mutate(paths = map(data, rw_forecast, fdt = fdt, ...)) %>%
+    select(-data) %>%
+    unnest(cols = paths) %>%
+    group_by(location) %>%
+    nest() %>%
+    mutate(paths2 = map(data, reshape_paths_2024_2025)) %>%
+    select(-data) %>%
+    mutate(fcst_df = map2(paths2, location, paths_to_forecast_2024_2025, 
+                          hop = tdat, 
+                          fdt = fdt,
+                          target_types = target_types))
+  
+  full <- bind_rows(tdat1$fcst_df)
+  
+  fname <- paste0(fdt, "-CEID-", mname, ".csv")
+  if (!dir.exists(odir)) {
+    dir.create(odir)
+  }
+  opath <- file.path(odir, fname)
+  write_csv(full, opath)
+}
+
+paths <- map(forecast_dates,
+             sim_paths,
+             tdat = tdat,
+             npaths = mconfig$model_pars$npaths,
+             tailn = mconfig$model_pars$tailn,
+             include_drift = mconfig$model_pars$include_drift,
+             odir = "forecasts",
+             mname = "Walk")
+
+head(paths)
+```
+
+It generates 1-4 weeks ahead forecasts for many locations.  
+Update (2024-11-26): Code chunk above now runs without errors or warnings.
+
+```{r}
+
+filtered_covid_forecast <- paths[[1]] %>% filter(location == "01")
+
+
+
+split_data <- split(filtered_covid_forecast, filtered_covid_forecast$target_end_date)
+
+split_data
+```
+
+Here is if I forecast for a given state, e.g. state 01. It also generates some errors.  
+Update (2024-11-26): Code chunk below now runs without errors or warnings.
+
+```{r}
+filtered_data <- tdat %>% filter(location == "01")
+
+head(filtered_data)
+
+results <- map(forecast_dates,
+             sim_paths,
+             tdat = filtered_data,
+             npaths = mconfig$model_pars$npaths,
+             tailn = mconfig$model_pars$tailn,
+             include_drift = mconfig$model_pars$include_drift,
+             odir = "forecasts",
+             mname = "Walk")
+
+split_forecasts <- split(results[[1]], results[[1]]$target_end_date)
+split_forecasts
+
+```
+
+Here I will try to create a similar dataset with the hospitalization data and see if it generates any forecasts.
+
+I will keep the columns names and variables exactly as the initial COVID data. The only data that we are actually interested in is the target_type column == "wk ahead inc case", which is the influenza cases.
+
+UPDATE (2024-11-16): Now trying with new data format and targets
+
+```{r}
+
+# Locations as defined by cdcepi
+locations_file <- "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/refs/heads/main/auxiliary-data/locations.csv"
+state_codes <- read_csv(locations_file)
+
+# Old data
+# NHSN_data_old <- read_csv("Weekly_United_States_Hospitalization_Metrics_by_Jurisdiction__During_Mandatory_Reporting_Period_from_August_1__2020_to_April_30__2024__and_for_Data_Reported_Voluntarily_Beginning_May_1__2024__National_Healthcare_Safety_Network__NHSN_.csv")
+
+# New data
+# NHSN_data_new <- read_csv("Weekly_Hospital_Respiratory_Data__HRD__Metrics_by_Jurisdiction__National_Healthcare_Safety_Network__NHSN__20241126.csv")
+
+# The variable names in the Odata version are different (no spaces, etc,) from the
+# names provides by the direct download.
+# Here, we create a key for translating the variable names.
+# NHSN_names <- tibble(
+#   name = names(NHSN_data_odata),
+#   full_name = names(NHSN_data_new)
+# )
+# write_csv(NHSN_names, "NHSN_names.csv")
+NHSN_names <- read_csv("NHSN_names.csv", show_col_types = FALSE)
+
+# Get auto-refreshed data via OData protocol
+# https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data
+library(RSocrata)
+```
+
+NHSN data (Eric version not in use)
+
+```{r}
+
+#NHSN_data <- suppressWarnings(read.socrata("https://data.cdc.gov/api/odata/v4/ua7e-t2fy")) %>% 
+#  as_tibble() %>% 
+#  mutate(weekendingdate = as.Date(weekendingdate)) %>% 
+  # Impose full names`
+#  data.table::setnames(old = NHSN_names$name, new = NHSN_names$full_name) %>% 
+#  mutate(`Geographic aggregation` = case_when(`Geographic aggregation` == 'USA' ~ 'US',
+#                                              .default = #`Geographic aggregation`)) %>% 
+#  filter(`Geographic aggregation` %in% state_codes$abbreviation)
+  
+```
+
+Preliminary NHSN data from downloaded file.
+
+```{r}
+NHSN_data <- read_csv("weekly_forecasts/preliminary_data/Weekly_Hospital_Respiratory_Data__HRD__Metrics_by_Jurisdiction__National_Healthcare_Safety_Network__NHSN___Preliminary__20241204.csv") %>% 
+  as_tibble() %>% 
+#  mutate(`Week Ending Date` = as.Date(`Week Ending Date`)) %>% 
+  # Impose full names`
+#  data.table::setnames(old = NHSN_names$name, new = NHSN_names$full_name) %>% 
+  mutate(`Geographic aggregation` = case_when(`Geographic aggregation` == 'USA' ~ 'US',
+                                              .default = `Geographic aggregation`)) %>% 
+  filter(`Geographic aggregation` %in% state_codes$abbreviation)
+```
+
+Final dataset utilized on the forecasting.
+
+```{r}
+
+# selected_data <- NHSN_data %>%
+#   # select(`Week Ending Date`, `Geographic aggregation`, `Weekly Total Influenza Admissions`) %>% # old dataset
+#   select(`Week Ending Date`, `Geographic aggregation`, `Total Patients Hospitalized with Influenza`) %>%
+#   rename(
+#     target_end_date = `Week Ending Date`,
+#     location = `Geographic aggregation`,
+#     value = `Weekly Total Influenza Admissions`
+#   ) %>%
+#   mutate(target_type = "wk ahead inc case")
+
+# selected_data <- NHSN_data %>%
+#   select(`Week Ending Date`, `Geographic aggregation`, `Weekly Total Influenza Admissions`, `Weekly Total COVID-19 Admissions`) %>% #old
+#   # select(`Week Ending Date`, `Geographic aggregation`, 
+#   #        `Total Patients Hospitalized with Influenza`,
+#   #        `Total Patients Hospitalized with RSV`,
+#   #        `Total ICU Patients Hospitalized with COVID-19`) %>%
+#   rename(
+#     target_end_date = `Week Ending Date`,
+#     location = `Geographic aggregation`,
+#     influenza_admissions = `Total Patients Hospitalized with Influenza` #,
+#     # covid_admissions = `Weekly Total COVID-19 Admissions`
+#   ) %>%
+#   pivot_longer(
+#     # cols = c(influenza_admissions, covid_admissions),
+#     cols = influenza_admissions,
+#     names_to = "admission_type",
+#     values_to = "value"
+#   ) %>%
+#   mutate(
+#     target_type = case_when(
+#       admission_type == "influenza_admissions" ~ "wk ahead inc case",
+#       admission_type == "covid_admissions" ~ "wk ahead inc death"
+#     )
+#   ) %>%
+#   select(-admission_type) %>%
+#   mutate(value = replace_na(value, 0))  # Set NA values in 'value' to 0
+# 
+# selected_data$new_column <- 0:(NROW(selected_data) - 1)
+# 
+# head(selected_data)
+
+test_dataframe <- NHSN_data %>%
+  # select(`Week Ending Date`, `Geographic aggregation`, `Weekly Total Influenza Admissions`, `Weekly Total COVID-19 Admissions`) %>% #old
+  select(target_end_date = `Week Ending Date`,
+         abbreviation = `Geographic aggregation`,
+         admissions_influenza = `Total Influenza Admissions`,
+         admissions_rsv = `Total RSV Admissions`,
+         admissions_covid = `Total COVID-19 Admissions`) %>%
+  pivot_longer(
+    cols = c(admissions_influenza, admissions_rsv, admissions_covid),
+    names_to = "target_type",
+    values_to = "value"
+  ) %>% 
+  mutate(value = replace_na(value, 0)) %>%    # Set NA values in 'value' to 0
+  # add numeric codes and keep only locations in state_codes
+  inner_join(state_codes[c("abbreviation","location")], by = "abbreviation") %>% 
+  relocate(location,abbreviation)
+
+# 
+# selected_data$new_column <- 0:(NROW(selected_data) - 1)
+# 
+# head(selected_data)
+
+
+# new column
+# test_dataframe <- data.frame("...1" = selected_data$new_column, 
+#                              "location" = selected_data$location,
+#                              "target_end_date" = selected_data$target_end_date,
+#                              "value" = selected_data$value, 
+#                              "target_type" = selected_data$target_type)
+# 
+
+
+# Replace abbreviations in selected_data$location with numeric codes
+# test_dataframe$location <- state_codes[test_dataframe$location]
+
+
+head(test_dataframe)
+```
+
+Here I will try for the the same dataframe. You will note that it does not work. 
+
+UPDATE (2024-11-26): Input data must be filtered to explude dates greater than the forecast date.  
+To work, this requires the new function `sim_paths_2024_2025` and the functions in `FluSight.R`, 
+which are are modified from `covidhub-common.R`.
+
+```{r}
+filtered_data <- test_dataframe %>% filter(location == "01" & target_end_date <= max(forecast_dates)) # CHECK COMPARISON OPERATOR
+
+head(filtered_data)
+
+results_with_new_dataframe <- map(forecast_dates,
+             sim_paths_2024_2025,
+             target_types = "admissions_influenza",
+             tdat = filtered_data,
+             npaths = mconfig$model_pars$npaths,
+             tailn = mconfig$model_pars$tailn,
+             include_drift = mconfig$model_pars$include_drift,
+             odir = "forecasts",
+             mname = "Walk")
+
+results_with_new_dataframe
+
+```
+Now lets forecast for all 53 locations (incl US, Puerto Rico and DC)
+
+```{r}
+
+# Setup the forecast date 
+forecast_dates <- max(test_dataframe$target_end_date) # forecast date is the last data of the dataset
+forecast_dates
+
+# Split the data by location 
+# create nested dataframes to run one at the time similar to the example above
+
+locations_data <- test_dataframe %>%
+  group_split(location)
+
+
+unique(test_dataframe$location)
+
+# Define a helper function to process each location
+process_location <- function(location_data) {
+  # Filter data for the given location
+  filtered_data <- location_data %>%
+    filter(target_end_date <= max(forecast_dates))
+  
+  # Run the simulation
+  results <- map(
+    forecast_dates,
+    sim_paths_2024_2025,
+    target_types = "admissions_influenza",
+    tdat = filtered_data,
+    npaths = mconfig$model_pars$npaths,
+    tailn = mconfig$model_pars$tailn,
+    include_drift = mconfig$model_pars$include_drift,
+    odir = "forecasts",
+    mname = "Walk"
+  )
+  
+  return(results)
+}
+
+# Apply the process to all locations
+all_results <- map(locations_data, process_location)
+
+#Combine all results into a single data frame
+combined_results <- all_results %>%
+  map_dfr(~bind_rows(.x))
+
+# Organize the output format
+colnames(combined_results)<-c("reference_date","target","target_end_date","location","output_type","output_type_id","value") 
+
+# Correct the forecast horizion (0-3) and remove point forecast (keep only quantiles)
+combined_results <- combined_results %>%
+  filter(output_type != "point") %>%
+  mutate(horizon = as.numeric(target_end_date - reference_date) / 7 - 1)%>%
+  mutate(reference_date = reference_date+7)
+# Final dataframe ready for submission
+
+combined_results$target<-"wk inc flu hosp"
+
+head(combined_results)
+
+
+# write CSV
+write_csv(combined_results, file = "weekly_forecasts/UGA_CEID-Walk/2024-12-07-UGA_CEID-Walk.csv")
+```
+
+

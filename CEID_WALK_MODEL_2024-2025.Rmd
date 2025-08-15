@@ -6,8 +6,8 @@ date: "2024-12-18"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
 
+library(tidyverse)
 library(RSocrata)
 ```
 
@@ -45,7 +45,7 @@ rw_forecast <- function(df, fdt, npaths = 100,
   last_end_date <- max(df$target_end_date)
   stopifnot(fdt - last_end_date < lubridate::ddays(3))
   df1 <- df %>% filter(target_end_date <= fdt)
-  ## remove oobservations more that 2 sds away from mean
+  ## remove observations more that 2 sds away from mean
   win <- ts(df1$value) %>% tail(n = max(tailn, 14))
   sigma <- sd(win)
   m <- mean(win)
@@ -158,9 +158,7 @@ NHSN_names <- read_csv("NHSN_names.csv", show_col_types = FALSE)
 
 ```
 
-
 You need to download preliminary NHSN data from this website:
-
 
 <https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data>
 
@@ -177,12 +175,12 @@ write_csv(preliminary_NHSN_data, paste0(
   )
 ```
 
-
+Run this after downloading the weekly data from the CDC website.
 
 ```{r}
 
 # change the date  to the correct new dataset!!!!!
-NHSN_data <- read_csv("weekly_forecasts/preliminary_data/Weekly_Hospital_Respiratory_Data__HRD__Metrics_by_Jurisdiction__National_Healthcare_Safety_Network__NHSN___Preliminary__20241218.csv") %>% 
+NHSN_data <- read_csv("weekly_forecasts/preliminary_data/Weekly_Hospital_Respiratory_Data__HRD__Metrics_by_Jurisdiction__National_Healthcare_Safety_Network__NHSN___Preliminary__20250102.csv") %>% 
   as_tibble() %>% 
 #  mutate(`Week Ending Date` = as.Date(`Week Ending Date`)) %>% 
   # Impose full names`
@@ -192,7 +190,7 @@ NHSN_data <- read_csv("weekly_forecasts/preliminary_data/Weekly_Hospital_Respira
   filter(`Geographic aggregation` %in% state_codes$abbreviation)
 ```
 
-Final dataset utilized on the forecasting.
+Final dataset used on the forecasting.
 
 ```{r}
 
@@ -286,6 +284,6 @@ Write the CSV file with the correct date
 
 ```{r}
 # write CSV
-write_csv(combined_results, file = "weekly_forecasts/UGA_CEID-Walk/2024-12-21-UGA_CEID-Walk.csv")
+write_csv(combined_results, file = "weekly_forecasts/UGA_CEID-Walk/2025-02-04-UGA_CEID-Walk.csv")
 ```
 
