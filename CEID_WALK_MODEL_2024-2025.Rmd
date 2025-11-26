@@ -158,29 +158,27 @@ NHSN_names <- read_csv("NHSN_names.csv", show_col_types = FALSE)
 
 ```
 
-You need to download preliminary NHSN data from this website:
+
+Getting data online. [not in use currently]
+
+```{r}
+#URL <- "https://data.cdc.gov/resource/mpgq-jmmr.csv?$limit=30000"
+#preliminary_NHSN_data <- RSocrata::read.socrata(URL)
+#last_updated <- gsub("-","",Sys.Date())
+#write_csv(preliminary_NHSN_data, paste0(
+#  "weekly_forecasts/preliminary_data/Weekly_Hospital_Respiratory_Data__HRD__Metrics_by_Jurisdiction__National_Healthcare_Safety_Network__NHSN___Preliminary__", last_updated, ".csv")
+#  )
+```
+
+You need to download preliminary NHSN data from this website every week:
 
 <https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data>
 
-Move file to the preliminary_data folder.
-
-It gets updated every Wednesday around 1PM.
-
-```{r}
-URL <- "https://data.cdc.gov/resource/mpgq-jmmr.csv?$limit=30000"
-preliminary_NHSN_data <- RSocrata::read.socrata(URL)
-last_updated <- gsub("-","",Sys.Date())
-write_csv(preliminary_NHSN_data, paste0(
-  "weekly_forecasts/preliminary_data/Weekly_Hospital_Respiratory_Data__HRD__Metrics_by_Jurisdiction__National_Healthcare_Safety_Network__NHSN___Preliminary__", last_updated, ".csv")
-  )
-```
-
-Run this after downloading the weekly data from the CDC website.
 
 ```{r}
 
 # change the date  to the correct new dataset!!!!!
-NHSN_data <- read_csv("weekly_forecasts/preliminary_data/Weekly_Hospital_Respiratory_Data__HRD__Metrics_by_Jurisdiction__National_Healthcare_Safety_Network__NHSN___Preliminary__20250102.csv") %>% 
+NHSN_data <- read_csv("weekly_forecasts/preliminary_data/Weekly_Hospital_Respiratory_Data_(HRD)_Metrics_by_Jurisdiction,_National_Healthcare_Safety_Network_(NHSN)_(Preliminary)_20251126.csv") %>% 
   as_tibble() %>% 
 #  mutate(`Week Ending Date` = as.Date(`Week Ending Date`)) %>% 
   # Impose full names`
@@ -283,7 +281,18 @@ head(combined_results)
 Write the CSV file with the correct date
 
 ```{r}
-# write CSV
-write_csv(combined_results, file = "weekly_forecasts/UGA_CEID-Walk/2025-02-04-UGA_CEID-Walk.csv")
+forecast_date_for_saving<-combined_results$reference_date[1]
+
+forecast_date_for_saving
+
+# Create filename using the date
+file_name <- paste0(
+  "weekly_forecasts/UGA_CEID-Walk/",
+  forecast_date_for_saving,
+  "-UGA_CEID-Walk.csv"
+)
+
+# Save CSV
+write_csv(combined_results, file = file_name)
 ```
 
