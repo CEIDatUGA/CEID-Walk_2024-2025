@@ -30,8 +30,13 @@ eval_string <- function(x){
 mconfig$model_pars <- map(mconfig$model_pars, eval_string)
 
 # Use systme date as forecast date
-forecast_dates <- Sys.Date()
-forecast_dates <- Sys.getenv("fdt") %>% as.Date()
+
+forecast_dates <- Sys.getenv("fdt") %>% 
+  (\(x) if (x == "") Sys.Date() else as.Date(x))()
+
+# 
+# forecast_dates <- Sys.Date()
+# forecast_dates <- Sys.getenv("fdt") %>% as.Date()
 
 forecast_dates
 ```
